@@ -1,0 +1,118 @@
+---
+
+version: '3'
+
+networks:
+  monitoring_node: {}
+
+services:
+  cadvisor:
+    image: 'google/cadvisor:v0.30.0'
+    privileged: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+    user: 'root'
+    command:
+      - '/usr/bin/cadvisor'
+      - '-port 8080'
+      - '-logtostderr'
+    volumes:
+      - '/:/rootfs:ro'
+      - '/cgroup/:/cgroup:ro'
+      - '/dev/disk/:/dev/disk:ro'
+      - '/dev/kmsg/:/dev/kmsg:ro'
+      - '/proc:/host/proc:ro'
+      - '/sys:/sys:ro'
+      - '/var/lib/docker/:/var/lib/docker:ro'
+      - '/var/run:/var/run:rw'
+    restart: 'unless-stopped'
+    expose:
+      - 8080
+    ports:
+      - "${LISTEN_IP_ADDRESS}:8080:8080"
+    networks:
+      - 'monitoring_node'
+
+  netdata:
+    image: 'firehol/netdata:latest'
+    user: 'root'
+    privileged: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+    volumes:
+      - '/:/rootfs:ro'
+      - '/proc:/host/proc:ro'
+      - '/sys:/host/sys:ro'
+    command:
+      - '/usr/sbin/netdata'
+      - '-D'
+      - '-s /host'
+      - '-p 19999'
+    restart: 'unless-stopped'
+    expose:
+      - 19999
+    ports:
+      - "${LISTEN_IP_ADDRESS}:19999:19999"
+    volumes:
+      - './config/netdata/netdata.conf:/etc/netdata/netdata.conf'
+    networks:
+      - 'monitoring_node'
+
+  node_exporter:
+    image: 'bitnami/node-exporter:0.16.0-r41'
+    user: 'root'
+    privileged: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+    volumes:
+      - '/:/rootfs:ro'
+      - '/cgroup/:/cgroup:ro'
+      - '/dev/disk/:/dev/disk:ro'
+      - '/proc:/host/proc:ro'
+      - '/run:/run:ro'
+      - '/sys:/host/sys:ro'
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+      - '--collector.logind'
+      - '--collector.mountstats'
+      - '--collector.systemd'
+      - '--collector.tcpstat'
+    restart: 'unless-stopped'
+    expose:
+      - 9100
+    ports:
+      - "${LISTEN_IP_ADDRESS}:9100:9100"
+    networks:
+      - 'monitoring_node'
+
+  process_exporter:
+    image: 'ncabatoff/process-exporter:0.2.11'
+    privileged: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+    volumes:
+      - '/proc:/host/proc:ro'
+    command:
+      - '-procfs=/host/proc'
+      - "-procnames=${PROCESS_EXPORTER_PROCNAMES}"
+    restart: 'unless-stopped'
+    expose:
+      - 9256
+    ports:
+      - "${LISTEN_IP_ADDRESS}:9256:9256"
+    networks:
+      - 'monitoring_node'
