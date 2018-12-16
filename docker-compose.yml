@@ -7,13 +7,13 @@ networks:
 
 services:
   cadvisor:
-    image: 'google/cadvisor:v0.30.0'
+    image: 'google/cadvisor:v0.31.0'
     privileged: true
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "100m"
-        max-file: "5"
+        max-size: "${LOGGING_MAX_SIZE}"
+        max-file: "${LOGGING_MAX_FILE}"
     user: 'root'
     command:
       - '/usr/bin/cadvisor'
@@ -37,14 +37,14 @@ services:
       - 'monitoring_node'
 
   netdata:
-    image: 'firehol/netdata:latest'
+    image: 'netdata/netdata:v1.11.1'
     user: 'root'
     privileged: true
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "100m"
-        max-file: "5"
+        max-size: "${LOGGING_MAX_SIZE}"
+        max-file: "${LOGGING_MAX_FILE}"
     volumes:
       - '/:/rootfs:ro'
       - '/proc:/host/proc:ro'
@@ -65,14 +65,14 @@ services:
       - 'monitoring_node'
 
   node_exporter:
-    image: 'bitnami/node-exporter:0.16.0-r41'
+    image: 'bitnami/node-exporter:0.17.0'
     user: 'root'
     privileged: true
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "100m"
-        max-file: "5"
+        max-size: "${LOGGING_MAX_SIZE}"
+        max-file: "${LOGGING_MAX_FILE}"
     volumes:
       - '/:/rootfs:ro'
       - '/cgroup/:/cgroup:ro'
@@ -97,13 +97,13 @@ services:
       - 'monitoring_node'
 
   process_exporter:
-    image: 'ncabatoff/process-exporter:0.2.11'
+    image: 'ncabatoff/process-exporter:0.4.0'
     privileged: true
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "100m"
-        max-file: "5"
+        max-size: "${LOGGING_MAX_SIZE}"
+        max-file: "${LOGGING_MAX_FILE}"
     volumes:
       - '/proc:/host/proc:ro'
     command:
