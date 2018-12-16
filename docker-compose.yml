@@ -12,8 +12,8 @@ services:
     logging:
       driver: 'json-file'
       options:
-        max-size: '100m'
-        max-file: '5'
+        max-size: "${LOGGING_MAX_SIZE}"
+        max-file: "${LOGGING_MAX_FILE}"
     user: 'root'
     command:
       - '/usr/bin/cadvisor'
@@ -43,8 +43,8 @@ services:
     logging:
       driver: 'json-file'
       options:
-        max-size: '100m'
-        max-file: '5'
+        max-size: "${LOGGING_MAX_SIZE}"
+        max-file: "${LOGGING_MAX_FILE}"
     volumes:
       - '/:/rootfs:ro'
       - '/proc:/host/proc:ro'
@@ -71,8 +71,8 @@ services:
     logging:
       driver: 'json-file'
       options:
-        max-size: '100m'
-        max-file: '5'
+        max-size: "${LOGGING_MAX_SIZE}"
+        max-file: "${LOGGING_MAX_FILE}"
     volumes:
       - '/:/rootfs:ro'
       - '/cgroup/:/cgroup:ro'
@@ -102,8 +102,8 @@ services:
     logging:
       driver: 'json-file'
       options:
-        max-size: '100m'
-        max-file: '5'
+        max-size: "${LOGGING_MAX_SIZE}"
+        max-file: "${LOGGING_MAX_FILE}"
     volumes:
       - '/proc:/host/proc:ro'
     command:
