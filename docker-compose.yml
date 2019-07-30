@@ -19,14 +19,19 @@ networks:
 services:
   cadvisor:
     image: 'google/cadvisor:v0.31.0'
-    privileged: true
-    logging: *default-logging
-    networks: *network-internal
-    user: 'root'
     command:
       - '/usr/bin/cadvisor'
       - '-port 8080'
       - '-logtostderr'
+    privileged: true
+    restart: 'unless-stopped'
+    user: 'root'
+    logging: *default-logging
+    networks: *network-internal
+    expose:
+      - 8080
+    ports:
+      - "${LISTEN_IP_ADDRESS}:8080:8080"
     volumes:
       - '/:/rootfs:ro'
       - '/cgroup/:/cgroup:ro'
@@ -36,25 +41,9 @@ services:
       - '/sys:/sys:ro'
       - '/var/lib/docker/:/var/lib/docker:ro'
       - '/var/run:/var/run:rw'
-    restart: 'unless-stopped'
-    expose:
-      - 8080
-    ports:
-      - "${LISTEN_IP_ADDRESS}:8080:8080"
 
   node_exporter:
     image: 'bitnami/node-exporter:0.17.0'
-    user: 'root'
-    privileged: true
-    logging: *default-logging
-    networks: *network-internal
-    volumes:
-      - '/:/rootfs:ro'
-      - '/cgroup/:/cgroup:ro'
-      - '/dev/disk/:/dev/disk:ro'
-      - '/proc:/host/proc:ro'
-      - '/run:/run:ro'
-      - '/sys:/host/sys:ro'
     command:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
@@ -63,24 +52,37 @@ services:
       - '--collector.mountstats'
       - '--collector.systemd'
       - '--collector.tcpstat'
+      - '--collector.time'
+      - '--collector.uname'
+    privileged: true
     restart: 'unless-stopped'
+    user: 'root'
+    logging: *default-logging
+    networks: *network-internal
     expose:
       - 9100
     ports:
       - "${LISTEN_IP_ADDRESS}:9100:9100"
+    volumes:
+      - '/:/rootfs:ro'
+      - '/cgroup/:/cgroup:ro'
+      - '/dev/disk/:/dev/disk:ro'
+      - '/proc:/host/proc:ro'
+      - '/run:/run:ro'
+      - '/sys:/host/sys:ro'
 
   process_exporter:
     image: 'ncabatoff/process-exporter:0.4.0'
-    privileged: true
-    logging: *default-logging
-    networks: *network-internal
-    volumes:
-      - '/proc:/host/proc:ro'
     command:
       - '-procfs=/host/proc'
       - "-procnames=${PROCESS_EXPORTER_PROCNAMES}"
+    privileged: true
     restart: 'unless-stopped'
+    logging: *default-logging
+    networks: *network-internal
     expose:
       - 9256
     ports:
       - "${LISTEN_IP_ADDRESS}:9256:9256"
+    volumes:
+      - '/proc:/host/proc:ro'

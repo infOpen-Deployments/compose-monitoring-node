@@ -16,22 +16,22 @@ x-network-internal:
 services:
   netdata:
     image: 'netdata/netdata:v1.11.1'
-    user: 'root'
-    privileged: true
-    logging: *default-logging
-    networks: *network-internal
-    volumes:
-      - '/:/rootfs:ro'
-      - '/proc:/host/proc:ro'
-      - '/sys:/host/sys:ro'
-      - './config/netdata/netdata.conf:/etc/netdata/netdata.conf'
     command:
       - '/usr/sbin/netdata'
       - '-D'
       - '-s /host'
       - '-p 19999'
+    privileged: true
     restart: 'unless-stopped'
+    user: 'root'
+    logging: *default-logging
+    networks: *network-internal
     expose:
       - 19999
     ports:
       - "${LISTEN_IP_ADDRESS}:19999:19999"
+    volumes:
+      - '/:/rootfs:ro'
+      - '/proc:/host/proc:ro'
+      - '/sys:/host/sys:ro'
+      - './config/netdata/netdata.conf:/etc/netdata/netdata.conf'
