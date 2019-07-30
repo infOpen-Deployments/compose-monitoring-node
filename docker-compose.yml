@@ -36,34 +36,6 @@ services:
     networks:
       - 'monitoring_node'
 
-  netdata:
-    image: 'netdata/netdata:v1.11.1'
-    user: 'root'
-    privileged: true
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: "${LOGGING_MAX_SIZE}"
-        max-file: "${LOGGING_MAX_FILE}"
-    volumes:
-      - '/:/rootfs:ro'
-      - '/proc:/host/proc:ro'
-      - '/sys:/host/sys:ro'
-    command:
-      - '/usr/sbin/netdata'
-      - '-D'
-      - '-s /host'
-      - '-p 19999'
-    restart: 'unless-stopped'
-    expose:
-      - 19999
-    ports:
-      - "${LISTEN_IP_ADDRESS}:19999:19999"
-    volumes:
-      - './config/netdata/netdata.conf:/etc/netdata/netdata.conf'
-    networks:
-      - 'monitoring_node'
-
   node_exporter:
     image: 'bitnami/node-exporter:0.17.0'
     user: 'root'
