@@ -2,19 +2,24 @@
 
 version: '3'
 
-networks:
-  monitoring_node: {}
+x-logging:
+  &default-logging
+  driver: 'json-file'
+  options:
+    max-size: "${LOGGING_MAX_SIZE}"
+    max-file: "${LOGGING_MAX_FILE}"
+
+x-network-internal:
+  &network-internal
+  - 'monitoring_node'
 
 services:
   netdata:
     image: 'netdata/netdata:v1.11.1'
     user: 'root'
     privileged: true
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: "${LOGGING_MAX_SIZE}"
-        max-file: "${LOGGING_MAX_FILE}"
+    logging: *default-logging
+    networks: *network-internal
     volumes:
       - '/:/rootfs:ro'
       - '/proc:/host/proc:ro'
@@ -30,5 +35,3 @@ services:
       - 19999
     ports:
       - "${LISTEN_IP_ADDRESS}:19999:19999"
-    networks:
-      - 'monitoring_node'
