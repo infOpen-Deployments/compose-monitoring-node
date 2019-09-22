@@ -1,6 +1,6 @@
 ---
 
-version: '3'
+version: '3.4'
 
 x-logging:
   &default-logging
@@ -43,7 +43,7 @@ services:
       - '/var/run:/var/run:rw'
 
   node_exporter:
-    image: "${NODE_EXPORTER_NAME}:${NODE_EXPORTER_VERSION}"
+    image: "${NODE_EXPORTER_IMAGE_NAME}:${NODE_EXPORTER_IMAGE_VERSION}"
     command:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
@@ -72,7 +72,7 @@ services:
       - '/sys:/host/sys:ro'
 
   process_exporter:
-    image: "${PROCESS_EXPORTER_NAME}:${PROCESS_EXPORTER_VERSION}"
+    image: "${PROCESS_EXPORTER_IMAGE_NAME}:${PROCESS_EXPORTER_IMAGE_VERSION}"
     command:
       - '-procfs=/host/proc'
       - "-procnames=${PROCESS_EXPORTER_PROCNAMES}"
