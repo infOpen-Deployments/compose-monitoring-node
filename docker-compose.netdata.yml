@@ -1,6 +1,6 @@
 ---
 
-version: '3'
+version: '3.4'
 
 x-logging:
   &default-logging
