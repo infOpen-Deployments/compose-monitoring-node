@@ -10,4 +10,4 @@ This service manage node monitoring, using multiple components:
 
 ## Deployment and usage
 
-* [Ansible role](https://gitlab.com/infopen/infrastructure/ansible-roles/ansible-role-monitoring-node)
+* [Ansible role](https://github.com/infOpen-Deployments/ansible-role-compose-monitoring-node)
